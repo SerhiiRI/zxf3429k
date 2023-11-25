@@ -1,89 +1,37 @@
-(ns core
-  (:require [clojure.string :as string])
-  (:require [clojure.spec.alpha :as s]))
+(ns zxf3429k.base
+  (:require [clojure.string :as string]))
 
-;; ------------------------
-;; Stage 1. Obtaining data
-(defn parse-table [string-table]
-  (map (fn [[k v]]
-         (map second (re-seq #"<(?:td|th)>(.+?)\s*</(?:td|th)>" v)))
-    (re-seq #"<tr>(.+?)</tr>" string-table)))
-
-(comment
-  (parse-table
-    (slurp "test.html")))
+;; ----
+;; Base
+;; ----
 
 (def data
- '(("num-1"  "bool-2"   "str-3"       "streats-4")
-   ("1"      "true"     " _London"    "Baker,Oxford,Abbey")
-   ("4"      " true "   "Saint_Malo"  "Louis Martin Avenue")
-   ("2"      "false"    "Kalush "     "Broadway,Washington")
-   ("3"      "  false"  "Florence"    "Tornabuoni,Calzaiuoli")))
-;; => ({:num-1 "1", :bool-2 "true", :str-3 " _London", :streats-4 "Baker,Oxford,Abbey"}... )
+  '(("id" "band"             "songs"                             "match-with-red-wine?")
+    ("1"  " Hentdrix"        "Little Wing , Voodoo Child"        "true")
+    ("4"  "Beach Boys "      "Kokomo, Getcha Back"               " true ")
+    ("6"  "Village People"   "Macho Man; Fireman"                "")
+    ("2"  " The Black Keys"  "Lonely Boy, Go, Fever"             "false")
+    ("5"  "Dude with burger" "OH MY DAYUM!"                      " FALSE ")
+    ("3"  "Rival Sons"       "Too Bad; Sweet Life; Open My Eyes" "  false")))
+;; Let transform into Vector of key-value Map's
+;;    [{:id "1", :band " Hentdrix", :songs "Little Wing , Voodoo Child", :does ....}
+;;     {:id "4", :band "Beach Boys", :songs "Kokomo, Getcha Back", :does-it...}
+;;     ...]
 
 
+;; --------
+;; Solution
+;; --------
 
-(let [[h & r] 
-      '(("num-1"  "bool-2"   "str-3"       "streats-4")
-        ("1"      "true"     " _London"    "Baker,Oxford,Abbey")
-        ("4"      " true "   "Saint_Malo"  "Louis Martin Avenue")
-        ("2"      "false"    "Kalush "     "Broadway,Washington")
-        ("3"      "  false"  "Florence"    "Tornabuoni,Calzaiuoli"))]
-  (->>
-    (for [e r]
-      (into {}
-        (map #(vector (keyword %1) %2)
-          h
-          e)))
-    (map (fn [e]
-           (-> e
-             (update :num-1 parse-long)
-             (update :bool-2 (comp parse-boolean string/trim))
-             (update :str-3 string/trim)
-             (update :streats-4 string/split #","))))
-    (sort-by :num-1)
-    ))
-
-
-
-
-
-;; -------------------
-;; Stage 2. Valid data
-(defn valid [data]
-  ;; // use clojure.alpha.spec for validation
-  )
-
-
-;; -----------------------------------
-;; Stage 3. Implement custom DataFrame 
-;; 
-;;  (def df
-;;   (DataFrame.
-;;    ["numeric-1" "boolean-2" "s..."]
-;;    [[1,2,3,4]
-;;     [true,false...]
-;;     [..,..,..])
-;;
-
-(defrecord DataFrame [colnames columns])
-
-
-;; ----------------------------------
-;; Stage 4. Convert DataFrame back to
-;; HTML table
-;; (.toHTML df)
-
-
-;; --------------------
-;; Test all 
-(->>
-  (slurp "test.html")
-  (parse-table)
-  ;; parsedata
-  ;; validate existing data
-  ;; output to file
-  ;; (spit "output.html" (.toHTML df))
-  )
-
+(let [[h & r] data
+      h (map keyword h)]
+  (->> r
+    (map #(zipmap h %))
+    (map #(-> %
+            (update :id parse-long)
+            (update :band string/trim)
+            (update :songs string/split #"\s*[,;]\s*")
+            (update :match-with-red-wine? (comp boolean parse-boolean string/lower-case string/trim))))
+    (sort-by :id)
+    (vec)))
 
