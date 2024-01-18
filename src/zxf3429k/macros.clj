@@ -12,7 +12,7 @@
   (string/empty? (:a z)) "value `:a` empty"
   (map? z)               "is not 'Map'")
 ;; RETURN [<valid?>, <String | nil> ]
-;;  =>
+;; EXAMPLE =>
 ;;   [false, "Unvalid `z` struct: value `:x` has 'nil' value; value `:a` empty."]
 
 ;; ---------------
