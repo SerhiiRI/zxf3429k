@@ -18,6 +18,16 @@
 ;;     {:id "4", :band "Beach Boys", :songs "Kokomo, Getcha Back", :does-it...}
 ;;     ...]
 
+;; ------------
+;; Requirements
+;; ------------
+;; MANDATORY transform this data to Vector<Map>
+;; MANDATORY cast "id" to Long/Int and sort-by it
+;; OPTIONALY trim "band"
+;; OPTIONALY transform "match-with-red-wine?" to bool.
+;; OPTIONALY if ONLY candidate sais that it know
+;;           RegEx, that they should split by <,>
+;;           and <;> symbols songs. To just List<String>
 
 ;; --------
 ;; Solution
