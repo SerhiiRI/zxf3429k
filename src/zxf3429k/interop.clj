@@ -4,15 +4,15 @@
 ;; Simple Overriding
 ;; -----------------
 
-(definterface ISecure (setSecure [this]))
+;; 1) Implement methods with mutable mutable fields
+
 (deftype User [login password])
 
-;;
 (def z (->User "A" "B"))
 (.setSecure z "Dummy")
 (.getSecure z) ;;=> "Dummy"
 
-;; Modification
+;; 2) reimplement toString() method
 (str User) ;;=> "#User{:user \"A\" :password \"D****\"}"
 
 ;; --------
