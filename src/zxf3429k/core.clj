@@ -36,8 +36,7 @@
 (let [[h & r] data
       h (map keyword h)]
   (->> r
-    (map #(zipmap h %))
-    (map #(-> %
+    (map #(-> (zipmap h %)
             (update :id parse-long)
             (update :band string/trim)
             (update :songs string/split #"\s*[,;]\s*")
